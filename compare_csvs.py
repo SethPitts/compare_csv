@@ -1,7 +1,7 @@
 import csv
 
 
-def compare(base_csv: str, updated_csv:str, common_fields: list):
+def compare(base_csv: str, updated_csv: str, common_fields: list):
     print("comparing {} and {}".format(base_csv, updated_csv))
     key_field = common_fields[0]
     prot_seg = common_fields[1]
@@ -21,31 +21,33 @@ def compare(base_csv: str, updated_csv:str, common_fields: list):
         base_fields = list(base_data)
         updated_fields = list(updated_data)
         # TODO: if fields are added ore deleted
-        for field in base_fields:
-            if updated_data.get(field):
-                base_row = base_data[field]
-                # print(base_row)
-                updated_row = updated_data[field]
-                # print(updated_row)
-                if base_row != updated_row:
-                    screen = base_row[screenid]
-                    metadata_key = list(base_row)
-                    for key in metadata_key:
-                        base_value = base_row[key]
-                        updated_value = updated_row[key]
-                        if base_value != updated_value:
-                            print("""
-                            {}
-                            {}
-                            {}
-                            changed 
-                            from: {} 
-                            to: {}""".format(screen, field, key, base_value, updated_value))
-            else:
-                print("{} is not present in the updated file".format(field))
+        with open('{}_metadata_changes.txt'.format(base_csv.replace(".csv","")), 'w') as change_log:
+            for field in base_fields:
+                if updated_data.get(field):
+                    base_row = base_data[field]
+                    updated_row = updated_data[field]
+                    if base_row != updated_row:
+                        screen = base_row[screenid]
+                        metadata_key = list(base_row)
+
+                        for key in metadata_key:
+                            base_value = base_row[key]
+                            updated_value = updated_row[key]
+                            if base_value != updated_value:
+                                change_log.write("""
+Screen: {}
+Field: {}
+Attribute: {}
+Changed 
+from: {} 
+to: {}\n""".format(screen, field, key, base_value, updated_value))
+                else:
+                    change_log.write(("{} is not present in the updated file\n".format(field)))
+
 
 def main():
-    compare('0067_Data_Dict_by_field_name.csv', '0067_Data_Dict_by_field_name2.csv', ['FIELD_NAME','PROTSEG','SCREENID'])
+    compare('0067_Data_Dict_by_field_name.csv', '0067_Data_Dict_by_field_name2.csv',
+            ['FIELD_NAME', 'PROTSEG', 'SCREENID'])
 
 
 if __name__ == '__main__':
