@@ -1,7 +1,16 @@
 import csv
+import os
+import sys
 
 
 def compare(base_csv: str, updated_csv: str, common_fields: list):
+    if not os.path.exists(base_csv):
+        print('{} does not exist'.format(base_csv))
+        sys.exit(0)
+    if not os.path.exists(updated_csv):
+        print('[] does not exist'.format(updated_csv))
+        sys.exit(0)
+
     print("comparing {} and {}".format(base_csv, updated_csv))
     key_field = common_fields[0]
     prot_seg = common_fields[1]
